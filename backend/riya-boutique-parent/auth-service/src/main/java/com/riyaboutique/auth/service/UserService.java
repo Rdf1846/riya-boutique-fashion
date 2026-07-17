@@ -7,12 +7,16 @@ import com.riyaboutique.auth.exception.UserAlreadyExistsException;
 import com.riyaboutique.auth.exception.UserNotFoundException;
 import com.riyaboutique.auth.mapper.UserMapperClass;
 import com.riyaboutique.auth.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
@@ -43,7 +47,7 @@ public class UserService {
         List<UserEntity> allUserEntityList = userRepository.findAll();
        List<UserDetailsDto> userDetailsDtoList =  allUserEntityList.stream().map(userMapperClass::mapUserEntityToUserDetailsDto).toList();
        if(!userDetailsDtoList.isEmpty()) {
-           System.out.println("All users details successfully fetched");
+           log.info("All users details successfully fetched");
        }
        return userDetailsDtoList;
     }
@@ -51,12 +55,16 @@ public class UserService {
 
     public UserDetailsDto findUserById(Long id)
     {
+        log.info("Finding user with id : {}",id);
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not exists"));
         UserDetailsDto userDetailsDto = userMapperClass.mapUserEntityToUserDetailsDto(userEntity);
+        log.debug("User successfully find with id : {}",id);
         return userDetailsDto;
     }
 
     public String deleteById(Long id) {
+
+        log.info("Deleting user with id: {}",id);
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not exists"));
 
             userRepository.deleteById(id);
@@ -66,6 +74,8 @@ public class UserService {
 
     public UserDetailsDto updateUserById(Long id, SignupRequestDto signupRequestDto) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User Not exists"));
+
+        log.info("Updating user profile");
 
         if(signupRequestDto.getFirstName() != null)
         {
@@ -87,6 +97,8 @@ public class UserService {
        UserEntity updatedEntity = userRepository.save(userEntity);
 
         UserDetailsDto userDetailsDto = userMapperClass.mapUserEntityToUserDetailsDto(updatedEntity);
+
+        log.info("User details successfully updated");
         return userDetailsDto;
     }
 }
