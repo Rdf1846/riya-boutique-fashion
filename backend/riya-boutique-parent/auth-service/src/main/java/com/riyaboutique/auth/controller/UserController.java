@@ -3,6 +3,7 @@ package com.riyaboutique.auth.controller;
 import com.riyaboutique.auth.dto.SignupRequestDto;
 import com.riyaboutique.auth.dto.UserDetailsDto;
 import com.riyaboutique.auth.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class UserController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequestDto signupRequestDto)
+    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto signupRequestDto)
     {
         String result = userService.signUp(signupRequestDto);
         return ResponseEntity.ok(result);
@@ -57,7 +58,7 @@ public class UserController {
 
 
     @PutMapping("/updateuser/{id}")
-    public ResponseEntity<UserDetailsDto> updateUserById(@PathVariable Long id, @RequestBody SignupRequestDto signupRequestDto)
+    public ResponseEntity<UserDetailsDto> updateUserById(@PathVariable Long id,@Valid @RequestBody SignupRequestDto signupRequestDto)
     {
         System.out.println("Update of record started");
         return ResponseEntity.ok(userService.updateUserById(id, signupRequestDto));
