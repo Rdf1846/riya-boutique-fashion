@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiErrorResponse> handleRuntimeException(RuntimeException ex)
+    public ResponseEntity<ApiErrorResponse> handleUserNotFoundException(UserNotFoundException ex)
     {
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
                 .success(false)
                 .message(ex.getMessage())
-                .status_code(HttpStatus.NOT_FOUND.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);

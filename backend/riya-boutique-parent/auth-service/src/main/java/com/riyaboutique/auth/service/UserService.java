@@ -3,6 +3,7 @@ package com.riyaboutique.auth.service;
 import com.riyaboutique.auth.dto.SignupRequestDto;
 import com.riyaboutique.auth.dto.UserDetailsDto;
 import com.riyaboutique.auth.entity.UserEntity;
+import com.riyaboutique.auth.exception.UserNotFoundException;
 import com.riyaboutique.auth.mapper.UserMapperClass;
 import com.riyaboutique.auth.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -45,13 +46,13 @@ public class UserService {
 
     public UserDetailsDto findUserById(Long id)
     {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not exists"));
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not exists"));
         UserDetailsDto userDetailsDto = userMapperClass.mapUserEntityToUserDetailsDto(userEntity);
         return userDetailsDto;
     }
 
     public String deleteById(Long id) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not exists"));
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not exists"));
 
             userRepository.deleteById(id);
             return "User Deleted successfully from database";
@@ -59,7 +60,7 @@ public class UserService {
     }
 
     public UserDetailsDto updateUserById(Long id, SignupRequestDto signupRequestDto) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User Not exists"));
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User Not exists"));
 
         if(signupRequestDto.getFirstName() != null)
         {
