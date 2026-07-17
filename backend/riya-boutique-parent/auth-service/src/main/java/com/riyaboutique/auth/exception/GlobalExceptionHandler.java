@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleUserNotFoundException(UserNotFoundException ex)
     {
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
@@ -22,5 +22,19 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
 
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex)
+    {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .statusCode(HttpStatus.CONFLICT.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+
+        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
     }
 }

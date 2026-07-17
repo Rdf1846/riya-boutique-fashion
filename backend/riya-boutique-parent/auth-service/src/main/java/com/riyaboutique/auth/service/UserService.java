@@ -3,6 +3,7 @@ package com.riyaboutique.auth.service;
 import com.riyaboutique.auth.dto.SignupRequestDto;
 import com.riyaboutique.auth.dto.UserDetailsDto;
 import com.riyaboutique.auth.entity.UserEntity;
+import com.riyaboutique.auth.exception.UserAlreadyExistsException;
 import com.riyaboutique.auth.exception.UserNotFoundException;
 import com.riyaboutique.auth.mapper.UserMapperClass;
 import com.riyaboutique.auth.repository.UserRepository;
@@ -28,6 +29,10 @@ public class UserService {
     public String signUp(SignupRequestDto signupRequestDto)
     {
 
+        if(userRepository.existsByEmail(signupRequestDto.getEmail()))
+        {
+            throw new UserAlreadyExistsException("User with same email already registered.");
+        }
         UserEntity userEntity = userMapperClass.mapUserRequestDtoToUserEntity(signupRequestDto);
         userRepository.save(userEntity);
         return "user details successfully saved into database";
