@@ -73,6 +73,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!--Adding the spring security, by default now all APIs in controller will get password protected -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
