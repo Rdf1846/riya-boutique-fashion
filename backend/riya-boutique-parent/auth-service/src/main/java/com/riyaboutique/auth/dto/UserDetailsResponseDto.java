@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailsDto {
+public class UserDetailsResponseDto {
 
     private String firstName;
     private String lastName;

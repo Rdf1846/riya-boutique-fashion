@@ -1,9 +1,10 @@
 package com.riyaboutique.auth.mapper;
 
 import com.riyaboutique.auth.dto.SignupRequestDto;
-import com.riyaboutique.auth.dto.UserDetailsDto;
+import com.riyaboutique.auth.dto.UserDetailsResponseDto;
 import com.riyaboutique.auth.entity.UserEntity;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Getter
@@ -11,24 +12,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapperClass {
 
+    private final PasswordEncoder passwordEncoder;
+
+    public UserMapperClass(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
     public UserEntity mapUserRequestDtoToUserEntity(SignupRequestDto signupRequestDto)
     {
         UserEntity userEntity = new UserEntity();
         userEntity.setFirstName(signupRequestDto.getFirstName());
         userEntity.setLastName(signupRequestDto.getLastName());
-        userEntity.setPassword(signupRequestDto.getPassword());
+        userEntity.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         userEntity.setEmail(signupRequestDto.getEmail());
 
         return userEntity;
 
     }
 
-    public UserDetailsDto mapUserEntityToUserDetailsDto(UserEntity userEntity)
+    public UserDetailsResponseDto mapUserEntityToUserDetailsDto(UserEntity userEntity)
     {
-        UserDetailsDto userDetailsDto = UserDetailsDto.builder().firstName(userEntity.getFirstName()).lastName(userEntity.getLastName())
+        UserDetailsResponseDto userDetailsResponseDto = UserDetailsResponseDto.builder().firstName(userEntity.getFirstName()).lastName(userEntity.getLastName())
                 .email(userEntity.getEmail())
                 .build();
 
-        return userDetailsDto;
+        return userDetailsResponseDto;
     }
 }

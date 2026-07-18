@@ -79,6 +79,30 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Adding jwt authentication dependency to Generate and validate JWT tokens.-->
+        <!-- 1.jjwt-api provides the public API. Its an Interface-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+
+        <!-- 2.jjwt-impl contains the runtime implementation. Actual implementation. -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- 3.jjwt-jackson handles JSON serialization/deserialization of JWT claims. JSON serialization.convert JWT payload to JSON. -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

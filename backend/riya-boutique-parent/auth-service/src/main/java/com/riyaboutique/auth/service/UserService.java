@@ -1,14 +1,19 @@
 package com.riyaboutique.auth.service;
 
+import com.riyaboutique.auth.dto.LoginRequestDto;
 import com.riyaboutique.auth.dto.SignupRequestDto;
-import com.riyaboutique.auth.dto.UserDetailsDto;
+import com.riyaboutique.auth.dto.UserDetailsResponseDto;
 import com.riyaboutique.auth.entity.UserEntity;
 import com.riyaboutique.auth.exception.UserAlreadyExistsException;
 import com.riyaboutique.auth.exception.UserNotFoundException;
 import com.riyaboutique.auth.mapper.UserMapperClass;
 import com.riyaboutique.auth.repository.UserRepository;
+import com.riyaboutique.auth.securityConfig.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,16 +21,25 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
+
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
     private final UserMapperClass userMapperClass;
 
-    public UserService(UserRepository userRepository, UserMapperClass userMapperClass)
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
+
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, UserMapperClass userMapperClass, AuthenticationManager authenticationManager, JwtService jwtService)
     {
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userMapperClass = userMapperClass;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
 
@@ -42,24 +56,24 @@ public class UserService {
         return "user details successfully saved into database";
     }
 
-    public List<UserDetailsDto> findAllUsers()
+    public List<UserDetailsResponseDto> findAllUsers()
     {
         List<UserEntity> allUserEntityList = userRepository.findAll();
-       List<UserDetailsDto> userDetailsDtoList =  allUserEntityList.stream().map(userMapperClass::mapUserEntityToUserDetailsDto).toList();
-       if(!userDetailsDtoList.isEmpty()) {
+       List<UserDetailsResponseDto> userDetailsResponseDtoList =  allUserEntityList.stream().map(userMapperClass::mapUserEntityToUserDetailsDto).toList();
+       if(!userDetailsResponseDtoList.isEmpty()) {
            log.info("All users details successfully fetched");
        }
-       return userDetailsDtoList;
+       return userDetailsResponseDtoList;
     }
 
 
-    public UserDetailsDto findUserById(Long id)
+    public UserDetailsResponseDto findUserById(Long id)
     {
         log.info("Finding user with id : {}",id);
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not exists"));
-        UserDetailsDto userDetailsDto = userMapperClass.mapUserEntityToUserDetailsDto(userEntity);
+        UserDetailsResponseDto userDetailsResponseDto = userMapperClass.mapUserEntityToUserDetailsDto(userEntity);
         log.debug("User successfully find with id : {}",id);
-        return userDetailsDto;
+        return userDetailsResponseDto;
     }
 
     public String deleteById(Long id) {
@@ -72,7 +86,7 @@ public class UserService {
 
     }
 
-    public UserDetailsDto updateUserById(Long id, SignupRequestDto signupRequestDto) {
+    public UserDetailsResponseDto updateUserById(Long id, SignupRequestDto signupRequestDto) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User Not exists"));
 
         log.info("Updating user profile");
@@ -96,9 +110,15 @@ public class UserService {
 
        UserEntity updatedEntity = userRepository.save(userEntity);
 
-        UserDetailsDto userDetailsDto = userMapperClass.mapUserEntityToUserDetailsDto(updatedEntity);
+        UserDetailsResponseDto userDetailsResponseDto = userMapperClass.mapUserEntityToUserDetailsDto(updatedEntity);
 
         log.info("User details successfully updated");
-        return userDetailsDto;
+        return userDetailsResponseDto;
+    }
+
+    public String login(LoginRequestDto loginRequestDto) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
+        String jwtToken = jwtService.generateToken(loginRequestDto.getEmail());
+        return jwtToken;
     }
 }

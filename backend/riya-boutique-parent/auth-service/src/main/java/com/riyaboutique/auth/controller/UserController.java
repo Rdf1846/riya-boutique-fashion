@@ -1,18 +1,23 @@
 package com.riyaboutique.auth.controller;
 
+import com.riyaboutique.auth.dto.LoginRequestDto;
 import com.riyaboutique.auth.dto.SignupRequestDto;
-import com.riyaboutique.auth.dto.UserDetailsDto;
+import com.riyaboutique.auth.dto.UserDetailsResponseDto;
 import com.riyaboutique.auth.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatusCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+
+    private static final Logger log =  LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -36,16 +41,16 @@ public class UserController {
 
 
     @GetMapping("/allusers")
-    public ResponseEntity<List<UserDetailsDto>> getAllUser()
+    public ResponseEntity<List<UserDetailsResponseDto>> getAllUser()
     {
-       List<UserDetailsDto> allUserList =  userService.findAllUsers();
+       List<UserDetailsResponseDto> allUserList =  userService.findAllUsers();
        return ResponseEntity.ok(allUserList);
 
     }
 
 
     @GetMapping("/findbyid/{id}")
-    public ResponseEntity<UserDetailsDto> findById(@PathVariable Long id)
+    public ResponseEntity<UserDetailsResponseDto> findById(@PathVariable Long id)
     {
        return ResponseEntity.ok(userService.findUserById(id));
     }
@@ -58,11 +63,17 @@ public class UserController {
 
 
     @PutMapping("/updateuser/{id}")
-    public ResponseEntity<UserDetailsDto> updateUserById(@PathVariable Long id,@Valid @RequestBody SignupRequestDto signupRequestDto)
+    public ResponseEntity<UserDetailsResponseDto> updateUserById(@PathVariable Long id, @Valid @RequestBody SignupRequestDto signupRequestDto)
     {
-        System.out.println("Update of record started");
+        log.info("Update of record started");
         return ResponseEntity.ok(userService.updateUserById(id, signupRequestDto));
     }
 
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto)
+    {
+        log.info("Login request recieved... Validation starting");
+        return ResponseEntity.ok(userService.login(loginRequestDto));
+    }
 }
