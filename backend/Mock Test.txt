@@ -1,0 +1,220 @@
+Bhai agr kuch spellings or grammer mistakes ho toh voh ignore krna ok. 
+Here are my answers:
+
+What is the difference between int and Integer?
+Ans1 : The difference between Int and Integer is that - int is a primitive datatype, while INTEGER is the corresponding wrapper class for the int datatype. Basically int values needs some utility methods like .toValue(), .toString(), etc. Now we need a place which can contains these methods, but we can't store them in int so the INTEGER class provides these methods. Also, we can store limited size value in int datatype, while INTEGER is a class, so the range is very very high.
+
+2. Why did we use Long for id instead of int?
+Ans : In prod environment we can have crores of records or users sending registration or order request. Now, int have some size limitations the maximum value it can store. But since LONG is a wrapper class of long datatype, so we can say its size is very very huge means it can store value big values as well. That's why we refer LONG in id in the database column to store large values.
+
+Q3.Difference between == and .equals()?
+Ans : The == is a relational comparison operator, which compares the two operands values in case of primitive datatype, while it compares the reference of Objects in case of Objects and returns the true or false based on comparison.
+.equals() method is originally coming from the 'Object' class which is the parent class of all the classes in java. 
+Here in object class, the syntax of .equal() method is as follows:
+public Boolean equals(Object ref1)
+{
+	if(this.ref1==ref)
+	{
+		return true}
+return false
+}
+
+Now, the .equals() method is overridden by the String class for the comparison of two String object values. 
+Ex : String A = new String("RAHUL");
+String B= new String("RAHUL");
+Now, SOPL(A.equals(B)); // Output : True, because it compares the values of the string object rather than reference.
+
+NOTE : In case of StringBuilder, StringBuffer its not override the .equals() of Object class, so it uses the same. Here, it compares the Objects reference rather than their values.
+
+
+Q4. Why are Entity class fields kept private?
+Ans : We usually keep the entity class fields as private to achieve the abstraction. Means if entity fields are not private, then anybody can access their values using .get() or getters. Now, this can be a risk of sensitive information leak like email, password, etc. Instead we create DTO's in which we only create the fields which can be share by other classes easily. We want to invoke the Entity class by the Service Class only, which we basically implements the whole business logic.
+
+
+
+Q5. What is Constructor Injection? Why is it preferred over Field Injection?
+Ans: So constructor injection is a type of Dependency injection. Basically to inject the dependency of any class into a leader class, we pass the object refrence of that class into the leader class. Now, this object is not created by us, it will automatically creates and managed by the Spring container - Beans. Controll of the objects is under the spring, rather than us. This property is also known as IOC(Inversion of control).
+Example of C.I.:
+Public class UserService {
+private final UserRepository userRepo;
+
+public UserService(UserRepository userRepo)
+{
+this.userRepo=userRepo;
+}
+
+Here, we are the injecting the object of the UserRepo class into the UserService class, using the constructor of the UserService class. This is known as Construction Injection.
+
+Now, here the object reference we created is final, so it can't be modified. But if we use field injection using the @Autowired annotation, then it can't be final. That's why we mostly preferred the CI over other dependency injections.
+
+
+
+Section B - Spring Boot
+Q6.
+
+Explain the complete flow when this API is called.
+
+POST /api/v1/users/signup
+
+From Postman till Database.
+
+Explain every layer.
+
+Answer : 
+Step i: Hit the API from postman.
+step ii : Through the postman, it sends the request to controller class of our project.
+iii. From the controller it checks the endpoint whether its existing in controller or not. If not exist, then through the 404 error not found or wrong endpoint like that. 
+If it exists, go into the corresponding method.
+iv. From there, it map the incoming json body into the passed DTO object in the method body using the @RequestBody annotation. Also if any validation then validates the json, give error if any invalid payload in json. 
+V. DTO is passed to the service class.
+vi. Service class check if the same user existing or not. If same user existing we can through our own custom exceptions using Global Exception Handler. If not exits, it converts the DTO to corresponding Entity class, then passes that entity to the REPOSITORY class save method, and return the Response to controller class. 
+Vii. Controller class sends the output to the Postman.
+
+
+Q7. Difference between @Controller and @RestController
+Ans : 
+@Restcontroller : Its an springboot annotation that We write on the controller class of our springBoot project. Which tells the spring that this will be the starting point of our project. Make this class a spring rest controller class, and align it with spring principles.
+
+@Controller : I forget about it, but i guess we uses RestController is made up of rest + controller.
+
+
+Q8. What does @Service mean? Why not make a normal Java class?
+Ans : Service annotation tells the spring that this class is our service class which will handles or implements the business functionality of our projects. Create a Object of it to make it globally available. Give this class a special treatment. If its a normal java class, then we can't do dependency injection of it in controller class, also its not then part of bean lifecycle in spring.  
+
+
+
+Q9. Why do we create Repository Interface? Who provides its implementation?
+Ans : We create repository interface to talk to the database. Basically Whenever any request body come to our application, we need some mechanism to insert the request into the database. We are not going to write the SQL statement manually everytime. Instead we will make use of the method of this interface. The beauty of this is that the implementation of these methods is provided by the spring during the runtime. With the help of JPA hibernate it generates the sql query automatically to insert the records into the database. 
+We are not providing the implemnentation, spring itself providing the implementation at runtime.
+
+
+Q10.What happens internally when we call userRepository.save(user);
+Ans: When we call this method, then spring itself provides the implementation of this method at runtime to save the entity class object into the database table records. Basically hibernates generates the sql insert Query to insert the records into the database. 
+
+
+Section C - JPA / Hibernate
+Q11.Difference between @Entity and @Table
+Ans : @Entity : It defines that this class is the JPA entity class of our springboot application. Basically this class represents the database table. We pass this object class to the repository save method to save the entity into the database. Basically JPA creates the database table for this entity class.
+@Table : This annotation is used to give the name of the table which will creates in the database by the JPA hibernate.
+
+
+Q12. Why did Hibernate create the table automatically? Which property controls this?
+Ans : Its a feature of spring that hibernates creates automatically. We write one property in application.properties to control this behaviour.
+spring.hiberante.ddl-auto=update
+
+
+Q13.Difference between ddl-auto=create and ddl-auto=update
+Ans : Both of these are the hibernate properties which tells the spring how we have to create the database tables.
+Create: Whenever our application starts, everytime it creates a new database table. It uses CREATE table syntax.
+update : Checks if the table exists, then instead of creating new, just update it. IT uses ALETR table syntax.
+
+
+Q14.Why did we write @GeneratedValue(strategy = GenerationType.IDENTITY)
+Ans : Its basically used for the id generation strategy for the Primary key column in the database. Here its saying to auto increment the value by one eveyrtime a new records inserts into the database.
+
+Example : 
+Id |
+----
+1
+2
+..
+
+
+Section D - DTO / Mapper
+Q15. Why don't we return Entity directly from Controller? Why create DTO?
+Ans : Entity represents the whole user data from the database. It contains sensitive information as well like email, password, dob, etc. Even table schemas. So we usually not expose the entity class to the controller class. Instead we create a new class which is having only the fields which we want to share. This new class is known as DTO (Data Transfer Objects). If we pass entity directly anybody can access the fields of the entity class, so map entity to dto, and passes the dto's to controller class.
+
+
+Q16.Why did we create two DTOs? SignupRequestDto, UserDetailsDto.
+Ans : Here, when user signup to our application then we need all information to save in our database even including passwords, email, etc. So, we created a signup dto > duplicate of our entity class. All fields are same as in our ENTITY class. Its a RequestDto type.
+Now, when anybody searches the records from the database, then we should be careful that sensitive informations shouldn't be leaked. So here we created userDetailsDto from which we removed sensitive informations like passwords, etc. And, we pass this object as a Response from our application.
+
+
+Q17. 
+Where should mapping logic be written?
+
+Entity?
+
+DTO?
+
+Service?
+
+Mapper?
+
+Why?
+
+Ans : Mapping logic is written in the Mapper. Every class has its own duty. Mapper is created to map the dto to entity or vice versa.
+
+
+
+Section E - Exception Handling
+Q18. Why is throw new RuntimeException() not a good practice?
+Ans : Its not good practice. Because in prod, we should throw exceptions specific to the exception occurred like userNotFound exception, productNotFound excetion, etc. instead of just throwing runtime exception. Also, we should use global exception handler to handle all exceptions globally at place.
+We can customize it with global exception handler to only show the required details to user, instead of showing the error stack trace to user, which is use less for him and also difficult to understand the error.
+
+
+Q19.Why did we create UserNotFoundException instead of using RuntimeException?
+Ans : ts not good practice. Because in prod, we should throw exceptions specific to the exception occurred like userNotFound exception, productNotFound excetion, etc. instead of just throwing runtime exception. Basically userNotFoundException clearly tell its self that its related to user not found in the database. But runtime explains what? nothing its simply like runtime exception occuered, but exactly what? ALso, we can customize the error code, error status, message, error format as per our expectations.
+
+
+Q20.What is the purpose of @RestControllerAdvice
+Ans : It is an annotation applied on the top of global exception handler class, which tells the spring that Im the RestControllerAdvice class which will keep an eye on the Controller classes of our springBoot project. And, handle the execptions globally at one place.
+
+
+Section F - Validation
+Q21. Difference between
+
+@NotNull
+
+@NotEmpty
+
+@NotBlank
+
+And : 
+@NotNull : Applied on int or long values, String values. Basically it checks that value should not be null. But it can be blank or whitespace strings.
+@NotEmpty : Applied for object or string. Value shouldn't be empty, not null, not white space.
+@NotBlank : Value should not be blank, not even white space.
+
+
+Q22.
+
+Why did we write
+
+@Valid
+
+in Controller?
+Ans : To apply the validations which we have applied in the DTO class.
+
+
+Section G - Logging
+Q23.
+
+Why should we avoid System.out.println() in Production?
+Ans : System.out.println() logs the output in console. Suppose If 1 crore users registers, then to see whole content in terminal > Boom application crashed. So, we stores the log in the log file. Also, its very hard to see the logs in console if so many logs are there. If the application crash or restarts, then console logs disappears.
+
+
+Q24.
+Difference between
+
+INFO
+
+DEBUG
+
+WARN
+
+ERROR
+
+Ans : These are the different log levels, ERROR > only the error it will show. WARN : error and warning it shows. INFO : Error, warn, info shows its shows. By default spring log level is INFO, and in prod also we kept log level as INFO. 
+DEBUG : For developer or debugging purpose. It shows ERROR, WARN, INFO, DEBUG. TRACE : All details logs. Only used in testing if want very detailed logs. Never use in prod.
+
+
+Q25.How does Splunk get logs from our application? Explain the complete flow.
+ANs : Splunk reads the logs from the log file. Customize the logs, allows users to search.
+
+
+Q26.Suppose I ask you:
+"Explain your Authentication Service project." Explain it exactly as you would in a real interview. Architecture + Layers + Technologies + Flow.
+Ans : Hi sir, First of all my project is a real world e commerce website which will sells the fashion boutquie things. FrontEnd is developed using react, backend is with help of springBoot microservices, kafka, etc concepts.
+In this I have authentication service : Which basically takes the users to our database. It takes input from the user through signUp page, validates the input if any wrong things entered. 
+
+
