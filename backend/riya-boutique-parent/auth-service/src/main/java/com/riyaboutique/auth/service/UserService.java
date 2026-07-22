@@ -30,15 +30,14 @@ public class UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final JwtService jwtService;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, UserMapperClass userMapperClass, AuthenticationManager authenticationManager, JwtService jwtService)
+
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, UserMapperClass userMapperClass, AuthenticationManager authenticationManager)
     {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userMapperClass = userMapperClass;
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
     }
 
 
@@ -117,7 +116,6 @@ public class UserService {
 
     public String login(LoginRequestDto loginRequestDto) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
-        String jwtToken = jwtService.generateToken(loginRequestDto.getEmail());
-        return jwtToken;
+        return "login success";
     }
 }
