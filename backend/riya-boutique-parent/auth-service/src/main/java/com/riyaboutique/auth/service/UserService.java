@@ -8,7 +8,6 @@ import com.riyaboutique.auth.exception.UserAlreadyExistsException;
 import com.riyaboutique.auth.exception.UserNotFoundException;
 import com.riyaboutique.auth.mapper.UserMapperClass;
 import com.riyaboutique.auth.repository.UserRepository;
-import com.riyaboutique.auth.securityConfig.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;

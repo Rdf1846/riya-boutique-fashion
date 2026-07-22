@@ -1,23 +1,26 @@
-package com.riyaboutique.auth.securityConfig;
+package com.riyaboutique.auth.security;
 
 import com.riyaboutique.auth.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
-public class MyUserDetails implements UserDetails {
+
+public class CustomUserDetailsImpl implements UserDetails {
 
     private final UserEntity userEntity;
 
-    public MyUserDetails(UserEntity userEntity) {
+    public CustomUserDetailsImpl(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
 
+
+    //returning empty list as we don't have any roles created yet
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
